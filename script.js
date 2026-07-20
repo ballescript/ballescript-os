@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 /* =========================================
-       8. CÁMARA (OCULTAR EFECTOS EN IOS DEFINITIVO)
+       8. CÁMARA (LIMPIA Y ESTABLE)
     ========================================= */
     const video = document.getElementById('video-stream');
     const canvas = document.getElementById('photo-canvas');
@@ -194,21 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const controlsCapture = document.getElementById('controls-capture');
     const controlsSave = document.getElementById('controls-save');
     let streamPtr = null;
-
-    // Detección 100% real de dispositivos iOS (iPhone, iPad, iPod)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-    if (isIOS && effectsSelect) {
-        // Ocultamos por completo el selector en cualquier dispositivo de Apple con iOS
-        effectsSelect.style.display = 'none';
-        
-        // O si quieres ocultar también el contenedor o etiqueta que lo acompaña si lo tuviera:
-        const labelEfecto = effectsSelect.previousElementSibling;
-        if (labelEfecto && labelEfecto.tagName === 'LABEL') {
-            labelEfecto.style.display = 'none';
-        }
-    }
 
     async function initCamera() {
         if (streamPtr) return; 
@@ -228,8 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Aplicar filtro en vivo (solo si NO es iOS)
-    if (!isIOS && effectsSelect) {
+    // Aplicar filtro en vivo (PC / Android)
+    if (effectsSelect) {
         effectsSelect.addEventListener('change', () => {
             video.style.filter = effectsSelect.value;
         });
@@ -240,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.display = 'none';
         controlsCapture.style.display = 'block';
         controlsSave.style.display = 'none';
-        if (!isIOS && effectsSelect) {
+        if (effectsSelect) {
             video.style.filter = effectsSelect.value;
         }
     }
@@ -251,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
         
-        if (!isIOS && effectsSelect && effectsSelect.value !== 'none') {
+        if (effectsSelect && effectsSelect.value !== 'none') {
             ctx.filter = effectsSelect.value;
         }
 

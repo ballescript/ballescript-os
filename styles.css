@@ -259,3 +259,9 @@ body {
     .info-btn { display: inline-block; } /* Muestra el botón 'i' */
     #floating-tooltip { display: none !important; } /* Oculta el tooltip del mouse */
 }
+
+@supports (-webkit-touch-callout: none) {
+    #camera-effects {
+        display: none !important;
+    }
+}

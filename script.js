@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 /* =========================================
-       8. CÁMARA (WEBRTC Y CANVAS) - CORREGIDO
+       8. CÁMARA (CORRECCIÓN PARA IPHONE / SAFARI)
     ========================================= */
     const video = document.getElementById('video-stream');
     const canvas = document.getElementById('photo-canvas');
@@ -194,6 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const controlsCapture = document.getElementById('controls-capture');
     const controlsSave = document.getElementById('controls-save');
     let streamPtr = null;
+
+    // EL TRUCO: Un canvas extra en memoria para guardar la foto cruda original
+    const rawCanvas = document.createElement('canvas');
 
     async function initCamera() {
         if (streamPtr) return; 
@@ -213,10 +216,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Aplicar filtro CSS en vivo al video Y AL CANVAS
+    // Esta función hornea los pixeles en el canvas visible (Safari sí procesa lo visible)
+    function applyFilterToVisibleCanvas() {
+        const ctx = canvas.getContext('2d');
+        // Limpiamos la imagen anterior
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Aplicamos la fórmula matemática del filtro
+        ctx.filter = effectsSelect.value;
+        // Dibujamos la foto original intacta sobre el canvas visible, aplicando el filtro real
+        ctx.drawImage(rawCanvas, 0, 0);
+        
+        // Es vital quitar el filtro CSS, porque ahora el efecto ya está en los pixeles reales
+        canvas.style.filter = 'none'; 
+    }
+
+    // Al cambiar el selector de efectos
     effectsSelect.addEventListener('change', () => {
-        video.style.filter = effectsSelect.value;
-        canvas.style.filter = effectsSelect.value; // Permite cambiar el efecto tras tomar la foto
+        if (video.style.display === 'none') {
+            // Si ya tomamos la foto, horneamos el nuevo efecto en vivo
+            applyFilterToVisibleCanvas();
+        } else {
+            // Si estamos en vivo, solo aplicamos el efecto visual al video
+            video.style.filter = effectsSelect.value;
+        }
     });
 
     function resetCameraView() {
@@ -224,21 +246,25 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.display = 'none';
         controlsCapture.style.display = 'block';
         controlsSave.style.display = 'none';
+        video.style.filter = effectsSelect.value; 
     }
 
     // Tomar foto
     document.getElementById('btn-capture').addEventListener('click', () => {
+        // Ajustamos los tamaños exactos
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        
-        // 1. Dibujamos los pixeles crudos del video
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // 2. Le aplicamos el filtro CSS al canvas para que NO se pierda el efecto visual
-        canvas.style.filter = effectsSelect.value;
-        
-        // Cambiar interfaz
+        rawCanvas.width = video.videoWidth;
+        rawCanvas.height = video.videoHeight;
+
+        // 1. Guardamos la foto ORIGINAL INTACTA en el canvas crudo
+        const rawCtx = rawCanvas.getContext('2d');
+        rawCtx.drawImage(video, 0, 0);
+
+        // 2. Horneamos el filtro inmediatamente en el canvas visible
+        applyFilterToVisibleCanvas();
+
+        // 3. Cambiamos la interfaz
         video.style.display = 'none';
         canvas.style.display = 'block';
         controlsCapture.style.display = 'none';
@@ -248,25 +274,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botón Retomar
     document.getElementById('btn-retake').addEventListener('click', resetCameraView);
 
-    // Botón Guardar (Hornear el filtro en la descarga)
+    // Botón Guardar
     document.getElementById('btn-save').addEventListener('click', () => {
-        // Creamos un canvas temporal invisible
-        const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = canvas.width;
-        exportCanvas.height = canvas.height;
-        const exportCtx = exportCanvas.getContext('2d');
-        
-        // Aquí "horneamos" matemáticamente el filtro en los pixeles
-        exportCtx.filter = effectsSelect.value;
-        exportCtx.drawImage(canvas, 0, 0); 
-        
-        // Descargamos la imagen procesada
         const link = document.createElement('a');
         link.download = `foto-aero-${Date.now()}.png`;
-        link.href = exportCanvas.toDataURL('image/png');
+        // Como el efecto ahora vive en los pixeles del canvas visible, el iPhone lo descargará perfecto
+        link.href = canvas.toDataURL('image/png');
         link.click();
     });
-
+    
     /* =========================================
        9. RADIO ONLINE (HTML5 AUDIO)
     ========================================= */

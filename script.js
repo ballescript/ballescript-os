@@ -197,7 +197,7 @@ if (isIOSDevice) {
     });
 
 /* =========================================
-       8. CÁMARA (LIMPIA Y ESTABLE)
+       8. CÁMARA (DETECCIÓN ROBUSTA PARA IOS)
     ========================================= */
     const video = document.getElementById('video-stream');
     const canvas = document.getElementById('photo-canvas');
@@ -205,6 +205,13 @@ if (isIOSDevice) {
     const controlsCapture = document.getElementById('controls-capture');
     const controlsSave = document.getElementById('controls-save');
     let streamPtr = null;
+
+    // Validación estricta para ocultar los efectos en iPhone/iPad sin afectar PC ni Android
+    const isAppleMobile = /iPhone|iPad|iPod/i.navigator?.userAgent || /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if (isAppleMobile && effectsSelect) {
+        effectsSelect.remove();
+    }
 
     async function initCamera() {
         if (streamPtr) return; 
@@ -224,7 +231,7 @@ if (isIOSDevice) {
         }
     }
 
-    // Aplicar filtro en vivo (PC / Android)
+    // Aplicar filtro en vivo (Solo si el elemento existe, es decir, en PC y Android)
     if (effectsSelect) {
         effectsSelect.addEventListener('change', () => {
             video.style.filter = effectsSelect.value;

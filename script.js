@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 /* =========================================
-       8. CÁMARA (DETECTAR SAFARI Y EVITAR PROBLEMAS)
+       8. CÁMARA (OCULTAR EFECTOS EN IOS DEFINITIVO)
     ========================================= */
     const video = document.getElementById('video-stream');
     const canvas = document.getElementById('photo-canvas');
@@ -195,12 +195,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const controlsSave = document.getElementById('controls-save');
     let streamPtr = null;
 
-    // Detectar si el navegador es Safari (iOS o Mac)
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // Detección 100% real de dispositivos iOS (iPhone, iPad, iPod)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    if (isSafari && effectsSelect) {
-        // Si es Safari, ocultamos el selector de efectos para evitar dolores de cabeza
+    if (isIOS && effectsSelect) {
+        // Ocultamos por completo el selector en cualquier dispositivo de Apple con iOS
         effectsSelect.style.display = 'none';
+        
+        // O si quieres ocultar también el contenedor o etiqueta que lo acompaña si lo tuviera:
+        const labelEfecto = effectsSelect.previousElementSibling;
+        if (labelEfecto && labelEfecto.tagName === 'LABEL') {
+            labelEfecto.style.display = 'none';
+        }
     }
 
     async function initCamera() {
@@ -221,8 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Aplicar filtro en vivo (solo para navegadores que no sean Safari)
-    if (!isSafari && effectsSelect) {
+    // Aplicar filtro en vivo (solo si NO es iOS)
+    if (!isIOS && effectsSelect) {
         effectsSelect.addEventListener('change', () => {
             video.style.filter = effectsSelect.value;
         });
@@ -233,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.display = 'none';
         controlsCapture.style.display = 'block';
         controlsSave.style.display = 'none';
-        if (!isSafari && effectsSelect) {
+        if (!isIOS && effectsSelect) {
             video.style.filter = effectsSelect.value;
         }
     }
@@ -244,14 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
         
-        // Si no es Safari y hay un filtro activo, se lo aplicamos al canvas al guardar
-        if (!isSafari && effectsSelect && effectsSelect.value !== 'none') {
+        if (!isIOS && effectsSelect && effectsSelect.value !== 'none') {
             ctx.filter = effectsSelect.value;
         }
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Cambiar interfaz
         video.style.display = 'none';
         canvas.style.display = 'block';
         controlsCapture.style.display = 'none';

@@ -185,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('aeroNotes', textarea.value);
     });
 
-    /* =========================================
-       8. CÁMARA (WEBRTC Y CANVAS)
+/* =========================================
+       8. CÁMARA (WEBRTC Y CANVAS) - CORREGIDO
     ========================================= */
     const video = document.getElementById('video-stream');
     const canvas = document.getElementById('photo-canvas');
@@ -196,13 +196,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let streamPtr = null;
 
     async function initCamera() {
-        if (streamPtr) return; // Ya está encendida
+        if (streamPtr) return; 
         try {
             streamPtr = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             video.srcObject = streamPtr;
             resetCameraView();
         } catch (err) { 
-            alert('No se pudo acceder a la cámara. Por favor, acepta los permisos en tu navegador.'); 
+            alert('No se pudo acceder a la cámara. Por favor, acepta los permisos.'); 
         }
     }
 
@@ -213,9 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Aplicar filtro CSS en vivo al video
+    // Aplicar filtro CSS en vivo al video Y AL CANVAS
     effectsSelect.addEventListener('change', () => {
         video.style.filter = effectsSelect.value;
+        canvas.style.filter = effectsSelect.value; // Permite cambiar el efecto tras tomar la foto
     });
 
     function resetCameraView() {
@@ -231,9 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         
-        // Aplicar el filtro seleccionado al contexto del canvas antes de dibujar
-        ctx.filter = effectsSelect.value;
-        ctx.drawImage(video, 0, 0);
+        // 1. Dibujamos los pixeles crudos del video
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // 2. Le aplicamos el filtro CSS al canvas para que NO se pierda el efecto visual
+        canvas.style.filter = effectsSelect.value;
         
         // Cambiar interfaz
         video.style.display = 'none';
@@ -245,11 +248,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botón Retomar
     document.getElementById('btn-retake').addEventListener('click', resetCameraView);
 
-    // Botón Guardar
+    // Botón Guardar (Hornear el filtro en la descarga)
     document.getElementById('btn-save').addEventListener('click', () => {
+        // Creamos un canvas temporal invisible
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = canvas.width;
+        exportCanvas.height = canvas.height;
+        const exportCtx = exportCanvas.getContext('2d');
+        
+        // Aquí "horneamos" matemáticamente el filtro en los pixeles
+        exportCtx.filter = effectsSelect.value;
+        exportCtx.drawImage(canvas, 0, 0); 
+        
+        // Descargamos la imagen procesada
         const link = document.createElement('a');
         link.download = `foto-aero-${Date.now()}.png`;
-        link.href = canvas.toDataURL();
+        link.href = exportCanvas.toDataURL('image/png');
         link.click();
     });
 

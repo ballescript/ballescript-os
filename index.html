@@ -57,9 +57,30 @@
                 <canvas id="photo-canvas" style="display:none;"></canvas>
                 <select id="camera-effects" class="cam-select">
                     <option value="none">Efecto: Normal</option>
+                    
+                    <!-- Clásicos Básicos -->
                     <option value="grayscale(100%)">Blanco y Negro</option>
-                    <option value="sepia(100%)">Sepia</option>
-                    <option value="invert(100%)">Invertir Colores</option>
+                    <option value="sepia(100%)">Sepia Retro</option>
+                    <option value="invert(100%)">Invertir Negativo</option>
+                    
+                    <!-- Fotografía y Estilo -->
+                    <option value="saturate(300%) contrast(120%)">Vibrante (Frutiger Aero)</option>
+                    <option value="contrast(150%) saturate(120%) brightness(90%)">Cine Oscuro</option>
+                    <option value="brightness(130%) contrast(80%) saturate(60%)">Descolorido (Vintage)</option>
+                    <option value="grayscale(100%) contrast(300%)">Periódico / Cómic B&N</option>
+                    <option value="blur(4px) brightness(120%) contrast(110%)">Ensueño / Soft Focus</option>
+                    
+                    <!-- Cámaras Retro -->
+                    <option value="sepia(50%) grayscale(40%) contrast(140%) saturate(80%)">Polaroid Antigua 1980</option>
+                    <option value="brightness(150%) contrast(200%) saturate(50%)">Foto con Flash Fuerte</option>
+                    <option value="sepia(80%) contrast(150%) brightness(80%) hue-rotate(-15deg)">Cámara Desechable</option>
+                    
+                    <!-- Sci-Fi y Extremos -->
+                    <option value="sepia(100%) hue-rotate(90deg) saturate(300%) contrast(150%)">Visión Nocturna</option>
+                    <option value="invert(100%) hue-rotate(180deg) saturate(400%) contrast(120%)">Cámara Térmica (Falsa)</option>
+                    <option value="hue-rotate(300deg) saturate(300%) contrast(150%)">Rosa Cyberpunk</option>
+                    <option value="saturate(500%) hue-rotate(45deg) contrast(200%)">Arte Pop (Warhol)</option>
+                    <option value="contrast(300%) saturate(300%) hue-rotate(180deg)">Glitch Alienígena</option>
                 </select>
                 <div class="controls" id="controls-capture">
                     <button id="btn-capture" style="width: 100%; background: #43e97b;">Capturar Foto</button>

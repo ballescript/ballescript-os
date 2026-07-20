@@ -1,5 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+    // Destruir el selector de efectos en cualquier dispositivo iOS de forma definitiva
+const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+if (isIOSDevice) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const effectsSelect = document.getElementById('camera-effects');
+        if (effectsSelect) {
+            effectsSelect.remove(); // Borra el elemento por completo de la página en el iPhone
+        }
+    });
+}
     /* =========================================
        1. RELOJ EN TIEMPO REAL
     ========================================= */

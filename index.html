@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦦 BallescriptOS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="aero-background">
+        <div class="light-flare"></div>
+        <div class="green-hill"></div>
+        <div class="bubble" style="left: 20%; animation-duration: 8s; width: 40px; height: 40px;"></div>
+        <div class="bubble" style="left: 60%; animation-duration: 12s; width: 60px; height: 60px;"></div>
+        <div class="bubble" style="left: 80%; animation-duration: 10s; width: 30px; height: 30px;"></div>
+    </div>
+
+    <!-- Tooltip Flotante para Escritorio -->
+    <div id="floating-tooltip" class="glass"></div>
+
+    <div class="desktop" id="desktop">
+        <!-- Contenedor de Íconos -->
+        <div class="icon-container">
+            <div class="icon" data-url="/dolceacqua/">
+                <div class="emoji-icon">🏰</div>
+                <span>Dolceacqua</span>
+            </div>
+
+            <div class="icon" data-url="/piano/">
+                <div class="emoji-icon">🎹</div>
+                <span>Piano Virtual</span>
+            </div>
+
+            <div class="icon special" id="icon-camara">
+                <div class="emoji-icon">📷</div>
+                <span>Cámara</span>
+            </div>
+
+            <div class="icon special" id="icon-radio">
+                <div class="emoji-icon">📻</div>
+                <span>Radio</span>
+            </div>
+
+            <div class="icon special" id="icon-notes">
+                <div class="emoji-icon">📝</div>
+                <span>Bloc Notas</span>
+            </div>
+        </div>
+
+        <div class="window glass" id="window-camara">
+            <div class="window-header" title="Haz clic y arrastra para mover">
+                <span>📷 Cámara</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="window-content">
+                <video id="video-stream" autoplay playsinline></video>
+                <canvas id="photo-canvas" style="display:none;"></canvas>
+                <select id="camera-effects" class="cam-select">
+                    <option value="none">Efecto: Normal</option>
+                    <option value="grayscale(100%)">Blanco y Negro</option>
+                    <option value="sepia(100%)">Sepia</option>
+                    <option value="invert(100%)">Invertir Colores</option>
+                </select>
+                <div class="controls" id="controls-capture">
+                    <button id="btn-capture" style="width: 100%; background: #43e97b;">Capturar Foto</button>
+                </div>
+                <div class="controls" id="controls-save" style="display: none; gap: 10px;">
+                    <button id="btn-retake" style="flex: 1; background: #ff7675; color: white;">Retomar</button>
+                    <button id="btn-save" style="flex: 1; background: #74b9ff; color: white;">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="window glass" id="window-radio">
+            <div class="window-header" title="Haz clic y arrastra para mover">
+                <span>📻 Radio Online</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="window-content radio-tuner">
+                <div class="station-list">
+    <!-- Stream 100% directo y sin bloqueos CORS -->
+    <button class="station" data-stream="https://stream.radioparadise.com/mp3-128">Radio Paradise (Música Mix)</button>
+    
+    <!-- Estación de Jazz clásica -->
+    <button class="station" data-stream="https://strm112.1.fm/ajazz_mobile_mp3">1.FM - Absolute Jazz</button>
+</div>
+                <audio id="radio-player" controls style="width: 100%;"></audio>
+            </div>
+        </div>
+
+        <div class="window glass" id="window-notes">
+            <div class="window-header" title="Haz clic y arrastra para mover">
+                <span>📝 Notas</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="window-content" style="padding: 0;">
+                <textarea id="notepad-text" placeholder="Tus ideas se guardan solas..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú de Inicio -->
+    <div class="start-menu glass" id="start-menu">
+        <div class="start-header">BallescriptOS</div>
+        <div class="start-items">
+            <!-- Cada elemento ahora tiene su botón 'i' para móviles -->
+            <div class="start-row">
+                <a href="/dolceacqua/" target="_blank" class="start-link" data-info="Sitio web estático con galería fotográfica de Dolceacqua en formato WebP.">🏰 Dolceacqua</a>
+                <span class="info-btn" data-info="Sitio web estático con galería fotográfica de Dolceacqua en formato WebP.">i</span>
+            </div>
+            <div class="start-row">
+                <a href="/piano/" target="_blank" class="start-link" data-info="Sintetizador PWA. Funciona 100% offline tras la primera carga usando Web Audio API.">🎹 Piano Virtual</a>
+                <span class="info-btn" data-info="Sintetizador PWA. Funciona 100% offline tras la primera carga usando Web Audio API.">i</span>
+            </div>
+            <hr>
+            <div class="start-row">
+                <a href="#" id="menu-camara" class="start-link" data-info="Usa tu cámara web con filtros en tiempo real.">📷 Cámara Aero</a>
+                <span class="info-btn" data-info="Usa tu cámara web con filtros en tiempo real.">i</span>
+            </div>
+            <div class="start-row">
+                <a href="#" id="menu-radio" class="start-link" data-info="Escucha streams de radio en vivo mientras trabajas.">📻 Radio Online</a>
+                <span class="info-btn" data-info="Escucha streams de radio en vivo mientras trabajas.">i</span>
+            </div>
+            <div class="start-row">
+                <a href="#" id="menu-notes" class="start-link" data-info="Bloc de notas ultraligero que guarda tu texto automáticamente en el navegador.">📝 Bloc de Notas</a>
+                <span class="info-btn" data-info="Bloc de notas ultraligero que guarda tu texto automáticamente en el navegador.">i</span>
+            </div>
+            <hr>
+            <div class="start-row">
+                <a href="https://github.com/ballescript" target="_blank" class="start-link" data-info="Visita mi repositorio en GitHub para ver el código fuente.">💻 GitHub: @ballescript</a>
+                <span class="info-btn" data-info="Visita mi repositorio en GitHub para ver el código fuente.">i</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="taskbar glass">
+        <button class="start-btn" id="start-btn">Inicio</button>
+        <div class="weather-widget" id="weather-widget">Cargando clima...</div>
+        <div class="system-tray">
+            <div id="clock">00:00</div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
